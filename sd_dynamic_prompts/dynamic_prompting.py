@@ -515,11 +515,19 @@ class Script(scripts.Script):
             negative_prompts=all_negative_prompts,
         )
 
+        params = p.extra_generation_params
+
+        # Always write the actual dynamic prompts to metadata
+        if len(all_prompts) > 0 and "Prompt" not in params:
+            params["Prompt"] = all_prompts[0]
+        if len(all_negative_prompts) > 0 and "Negative Prompt" not in params:
+            params["Negative Prompt"] = all_negative_prompts[0]
+
+        # Write raw templates if option is enabled
         if opts.dp_write_raw_template:
-            params = p.extra_generation_params
-            if original_prompt:
+            if original_prompt and "Template" not in params:
                 params["Template"] = original_prompt
-            if original_negative_prompt:
+            if original_negative_prompt and "Negative Template" not in params:
                 params["Negative Template"] = original_negative_prompt
 
         p.all_prompts = all_prompts
